@@ -17,3 +17,6 @@ Copy the script code and paste it into your GTM container.
 Contributing
 
 If you have any suggestions or improvements, feel free to fork the repository and submit a pull request.
+
+
+https://drive.google.com/file/d/1_H04rEfE55vDQlIGm6XG4BQtl5FG67HQ/view?usp=sharing
