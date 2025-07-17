@@ -1,0 +1,52 @@
+<script>
+(function() {
+
+  // Listen for messages from Tally iframe
+  window.addEventListener("message", function(e) {
+    try {
+      // Check if the message is a Tally form submission event
+      if (typeof e.data === "string" && e.data.indexOf("Tally.FormSubmitted") !== -1) {
+
+        // Parse the received message
+        var parsed = JSON.parse(e.data);
+        var payload = parsed.payload;
+        if (!payload || !payload.fields) return;
+
+        // Prepare an object to store form responses
+        var formResponses = {};
+
+        // Loop through each field and extract its value
+        for (var i = 0; i < payload.fields.length; i++) {
+          var field = payload.fields[i];
+          var key = field.title ? field.title.toLowerCase().replace(/\s+/g, "_") : null;
+          var value = (field.answer && field.answer.value) || (field.answer && field.answer.raw) || null;
+
+          // Rename "n°tel" to "phone" to avoid special characters
+          if (key === "n°tel") {
+            formResponses["phone"] = value;
+            continue;
+          }
+
+          if (key && value !== null) {
+            formResponses[key] = value;
+          }
+        }
+
+        // Push the event and responses into the dataLayer
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(
+          Object.assign({
+            event: "tally_form_submit",
+            form_name: payload.formName,
+            form_id: payload.formId
+          }, formResponses)
+        );
+      }
+    } catch (err) {
+      // Log parsing or runtime errors
+      console.error("Tally Listener Error:", err);
+    }
+  });
+
+})();
+</script>
